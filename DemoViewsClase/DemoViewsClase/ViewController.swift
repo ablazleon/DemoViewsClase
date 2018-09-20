@@ -8,14 +8,18 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, FunctionViewDataSource {
+// Quieres que te ponga los métodos a
     @IBOutlet weak var funcView: FunctionView!
+    @IBOutlet weak var speedView: FunctionView! //Falta conectar
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     funcView.scale = 0.3
+    funcView.datasource = self
+    funcView.speedView = self
+   
     }
 
    

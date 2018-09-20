@@ -8,6 +8,15 @@
 
 import UIKit
 
+protocol FunctionViewDataSource: class { //
+    func startIndexFor(_ functionView: FunctionView) -> Double
+    func endIndexFor(_ functionView: FunctionView, pointAt index: Double) -> FunctionPoint
+    func functionView(_ functionView: FunctionView, pointAt index:Double) -> FunctionPoint
+    func pointsOfInterest(_ functionView: FunctionView) ->  [FunctionPoint]
+}
+
+
+@IBDesignable
 class FunctionView: UIView {
 
     /*
@@ -17,24 +26,33 @@ class FunctionView: UIView {
         // Drawing code
     }
     */
+    
+    @IBInspectable
+    var scale: Double = 4.0
+    @IBInspectable
+    var lw: Double = 2.0
+    @IBInspectable
+    var color: UIColor = .red
+    
+   weak var datasource: FunctionViewDataSource! // no hacer bucles de referecnias
 
     override func draw(_ rect: CGRect ){
     
-        @IBInspectable
-        var scale: Double = 4.0
-        @IBInspectable
-        var lw: Double = 2.0
-        @IBInspectable
-        var clor: UIColor = .red
+        // drawAxis()
+        //
         
         let p = UIBezierPath()
         
         
-        let i = 0.0
-        let x0 = 100*sin(0.02*i) + 100
-        let y0 = 100*cos(0.01*i) + 100
+        let i0 = datasource.startIndexFor(self)
+        let i1 = datasource.endIndexFor(self)
         
-        for i in stride(from: 0.0, to: 100.0, by: 0.5) {
+        let p0 = datasource.functionView(self, pointAt: i0)
+        
+        let x0 = vx2px(p0.x)
+        let y0 = vy2py(p0.y)
+        
+        for i in stride(from: 0.0, to: 100.0, by: (i1-i0)/50) {
             let x = i
             let y = 100*cos(i)
             p.addLine(to: CGPoint(x: x, y: y))
@@ -52,11 +70,11 @@ class FunctionView: UIView {
 
     }
         //
-    private func vx2px (vx: Double) - CGFloat{
+    private func vx2px (vx: Double) -> CGFloat{
         return CGFloat(scale*vx) + bounds.size.width/2
     }
     
-    private func vy2py (vy: Double) - CGFloat{
+    private func vy2py (vy: Double) -> CGFloat{
     return CGFloat(scale*vy) + bounds.size.width/2
     }
     
